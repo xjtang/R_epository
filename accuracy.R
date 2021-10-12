@@ -17,6 +17,8 @@ confusion_matrix <- function(map, ref) {
   return(conf)
 }
 
+#--------------------------------------
+
 # accuracy assessment
 accuracy_assessment <- function(map, ref, sta, staSize) {
   staCls <- sort(unique(sta))
@@ -162,6 +164,8 @@ accuracy_assessment <- function(map, ref, sta, staSize) {
   return(r)
 }
 
+#--------------------------------------
+
 # numeric example
 numeric_example <- function() {
   sta <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4)
@@ -171,24 +175,29 @@ numeric_example <- function() {
   return(accuracy_assessment(map, ref, sta, staSize))
 }
 
+#--------------------------------------
+
 # calculate F1 score
 getF1 <- function(user, producer) {
   return(2 * (user * producer) / (user + producer))
 }
+
+#--------------------------------------
 
 # calculate lag time from doy
 lagTime <- function(map, ref) {
   if ((map == 0) || (ref == 0)) {
     return(0)
   } else {
-    return(as.Date(map) - as.Date(ref))
+    return(as.numeric(as.Date(map) - as.Date(ref)))
   }
 }
 
+#--------------------------------------
+
 # assess change with date
-accuracy_curve <- function(data, staSize, lagRange=c(0,200), refDate='ref', mapDate='map', staName='sta') {
+accuracy_curve <- function(data, staSize, lagRange=c(0,200)) {
   n <- nrow(data)
-  for (i in 1:n) {data[i, 'lag'] == lagTime(data[i, mapDate], data[i, refDate])}
   lagtime <- seq(lagRange[1], lagRange[2])
   nLag <- length(lagtime)
   user <- rep(0, nLag)
@@ -198,9 +207,9 @@ accuracy_curve <- function(data, staSize, lagRange=c(0,200), refDate='ref', mapD
   f1 <- rep(0, nLag)
   for (i in 1:nLag) {
     lag <- lagtime[i]
-    ref <- data[, refDate] > 0
-    map <- (data[, mapData] > 0) & (data[, 'lag'] <= lag)
-    sta <- data[, staName]
+    ref <- data[, 'ref']
+    map <- (data[, 'map']) & (data[, 'lag'] <= lag)
+    sta <- data[, 'sta']
     aa <- accuracy_assessment(map, ref, sta, staSize)
     user[i] <- aa$user[1, 2]
     se_user[i] <- aa$user[2, 2]
@@ -208,7 +217,16 @@ accuracy_curve <- function(data, staSize, lagRange=c(0,200), refDate='ref', mapD
     se_prod[i] <- aa$producer[2, 2]
     f1[i] <- aa$f1[2]
   }
-  return(rbind(lagtime, user, producer, f1))
+  return(rbind(lagtime, user, se_user, prod, se_prod, f1))
 }
 
+#--------------------------------------
+
+# find level-off point
+level_off <- function(curve) {
+  
+  
+}
+
+#--------------------------------------
 # end

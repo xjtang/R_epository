@@ -99,3 +99,23 @@ doyToDate <- function(doy) {
   date <- c(year, month, day)
   return(date)
 }
+
+#--------------------------------------
+
+# fraction year to date
+fracToDate <- function(fyear) {
+  year <- floor(fyear)
+  frac <- fyear - year
+  doy <- round(frac * 365.25)
+  return(as.Date(paste0(year, "-01-01")) + doy)
+}
+
+#--------------------------------------
+
+# date difference
+dateDiff <- function(t1, t2) {
+  return(as.numeric(t2 - t1))
+}
+  
+#--------------------------------------
+# End
