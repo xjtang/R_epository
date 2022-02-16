@@ -202,8 +202,10 @@ accuracy_curve <- function(data, staSize, lagRange=c(0,200)) {
   nLag <- length(lagtime)
   user <- rep(0, nLag)
   se_user <- rep(0, nLag)
+  ci_user <- rep(0, nLag)
   prod <- rep(0, nLag)
   se_prod <- rep(0, nLag)
+  ci_prod <- rep(0, nLag)
   f1 <- rep(0, nLag)
   for (i in 1:nLag) {
     lag <- lagtime[i]
@@ -213,11 +215,13 @@ accuracy_curve <- function(data, staSize, lagRange=c(0,200)) {
     aa <- accuracy_assessment(map, ref, sta, staSize)
     user[i] <- aa$user[1, 2]
     se_user[i] <- aa$user[2, 2]
+    ci_user[i] <- aa$user[2, 2]*1.96
     prod[i] <- aa$producer[1, 2]
     se_prod[i] <- aa$producer[2, 2]
+    ci_prod[i] <- aa$producer[2, 2]*1.96
     f1[i] <- aa$f1[2]
   }
-  return(rbind(lagtime, user, se_user, prod, se_prod, f1))
+  return(rbind(lagtime, user, se_user, ci_user, prod, se_prod, ci_prod, f1))
 }
 
 #--------------------------------------
